@@ -1,0 +1,455 @@
+<html>
+
+<head>
+  <base href="https://cosmoexplorer.io/interactive-space/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reykooo</title>
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000;
+      font-family: 'Courier New', monospace;
+    }
+
+    #space {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .star {
+      position: absolute;
+      background-color: #fff;
+      border-radius: 50%;
+      animation: twinkle 5s infinite alternate;
+      box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
+    }
+
+    @keyframes twinkle {
+
+      0%,
+      100% {
+        opacity: 0.2;
+        transform: scale(0.8);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+    }
+
+    .comet {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background-color: #fff;
+      border-radius: 50%;
+      animation: cometMove 8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+    }
+
+    .comet::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 150px;
+      height: 2px;
+      background: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.8));
+      transform: translateX(-100%);
+    }
+
+    @keyframes cometMove {
+      0% {
+        transform: translate(var(--startX), var(--startY));
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(var(--endX), var(--endY));
+        opacity: 0;
+      }
+    }
+
+    .special-star {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background-color: gold;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      cursor: pointer;
+      transition: transform 0.3s;
+      animation: pulse 2s infinite;
+    }
+
+    .special-star:hover {
+      transform: scale(1.2);
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+      }
+    }
+
+    .message {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
+      text-align: center;
+      font-size: 20px;
+      line-height: 1.5;
+      max-width: 80%;
+      text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #ff00de, 0 0 35px #ff00de, 0 0 40px #ff00de, 0 0 50px #ff00de, 0 0 75px #ff00de;
+    }
+
+    .pixel-text {
+      font-family: 'Press Start 2P', cursive;
+      letter-spacing: 2px;
+    }
+
+    .question-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
+      text-align: center;
+    }
+
+    .question-box button {
+      margin: 10px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+
+    .question-box button:hover {
+      background-color: #45a049;
+      transform: scale(1.1);
+    }
+
+    .spark {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background-color: #ffff00;
+      border-radius: 50%;
+      animation: sparkle 2s linear forwards;
+    }
+
+    @keyframes sparkle {
+      0% {
+        transform: translateY(-100vh) scale(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+      }
+    }
+
+    .ufo {
+      position: absolute;
+      width: 100px;
+      height: 50px;
+      animation: flyUFO 20s linear infinite;
+    }
+
+    @keyframes flyUFO {
+      0% {
+        transform: translateX(-150px) translateY(var(--yPos));
+      }
+
+      100% {
+        transform: translateX(calc(100vw + 150px)) translateY(var(--yPos));
+      }
+    }
+
+    #thankYouMessage {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
+      text-align: center;
+      font-size: 24px;
+      font-family: 'Press Start 2P', cursive;
+      text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #ff00de, 0 0 35px #ff00de, 0 0 40px #ff00de, 0 0 50px #ff00de, 0 0 75px #ff00de;
+      z-index: 1000;
+    }
+
+    .glitter {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #fff;
+      border-radius: 50%;
+      animation: glitter 2s linear infinite;
+    }
+
+    @keyframes glitter {
+      0% {
+        transform: translateY(-100vh) scale(0);
+        opacity: 0;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(100vh) scale(1);
+        opacity: 0;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div id="space"></div>
+  <div id="message1" class="message pixel-text">Lo siento por ser tan imbécil, gracias por ser pana aun.</div>
+  <div id="message2" class="message pixel-text">Eres muy buena amiga y persona, se valora pana.</div>
+  <div id="message3" class="message pixel-text">Valoro que me perdones en estas circunstancias.</div>
+  <div id="questionBox" class="question-box pixel-text">
+    <p>¿Puedo ser tu amigo?</p>
+    <button onclick="acceptFriendship()">Sí</button>
+    <button onclick="acceptFriendship()">Sí</button>
+  </div>
+  <div id="thankYouMessage" class="pixel-text">Gracias asiática :)</div>
+
+  <script>
+    const space = document.getElementById('space');
+    const starCount = 500;
+
+    function createStar() {
+      const star = document.createElement('div');
+      star.className = 'star';
+
+      const size = Math.random() * 3 + 1;
+      star.style.width = `${size}px`;
+      star.style.height = `${size}px`;
+
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      star.style.left = `${x}%`;
+      star.style.top = `${y}%`;
+
+      const duration = 3 + Math.random() * 4;
+      star.style.animationDuration = `${duration}s`;
+
+      const delay = Math.random() * 5;
+      star.style.animationDelay = `${delay}s`;
+
+      return star;
+    }
+
+    for (let i = 0; i < starCount; i++) {
+      space.appendChild(createStar());
+    }
+
+    function createComet() {
+      const comet = document.createElement('div');
+      comet.className = 'comet';
+
+      const startX = Math.random() < 0.5 ? -10 : 110;
+      const startY = Math.random() * 100;
+      const endX = startX > 50 ? -10 : 110;
+      const endY = Math.random() * 100;
+
+      comet.style.setProperty('--startX', `${startX}vw`);
+      comet.style.setProperty('--startY', `${startY}vh`);
+      comet.style.setProperty('--endX', `${endX}vw`);
+      comet.style.setProperty('--endY', `${endY}vh`);
+
+      space.appendChild(comet);
+
+      comet.addEventListener('animationend', () => comet.remove());
+    }
+
+    setInterval(createComet, 2000);
+
+    const specialStars = [
+      { id: 'star1', message: 'message1', x: 45, y: 20 },
+      { id: 'star2', message: 'message2', x: 48, y: 25 },
+      { id: 'star3', message: 'message3', x: 51, y: 30 },
+      { id: 'star4', message: 'questionBox', x: 54, y: 35 }
+    ];
+
+    specialStars.forEach(starInfo => {
+      const star = document.createElement('div');
+      star.id = starInfo.id;
+      star.className = 'special-star';
+      star.style.left = `${starInfo.x}%`;
+      star.style.top = `${starInfo.y}%`;
+      star.addEventListener('click', () => showMessage(starInfo.message));
+      space.appendChild(star);
+    });
+
+    function showMessage(messageId) {
+      document.querySelectorAll('.message, .question-box').forEach(el => el.style.display = 'none');
+      const messageElement = document.getElementById(messageId);
+      messageElement.style.display = 'block';
+      messageElement.style.animation = 'none';
+      messageElement.offsetHeight;
+      messageElement.style.animation = 'fadeIn 1s';
+    }
+
+    function acceptFriendship() {
+      document.getElementById('questionBox').style.display = 'none';
+      showThankYouMessage();
+      createSparks();
+      createGlitter();
+    }
+
+    function showThankYouMessage() {
+      const thankYouMessage = document.getElementById('thankYouMessage');
+      thankYouMessage.style.display = 'block';
+      setTimeout(() => {
+        thankYouMessage.style.display = 'none';
+      }, 5000);
+    }
+
+    function createSparks() {
+      for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+          const spark = document.createElement('div');
+          spark.className = 'spark';
+          spark.style.left = `${Math.random() * 100}%`;
+          spark.style.top = '0';
+
+          space.appendChild(spark);
+
+          spark.addEventListener('animationend', () => spark.remove());
+        }, i * 20);
+      }
+    }
+
+    function createGlitter() {
+      for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+          const glitter = document.createElement('div');
+          glitter.className = 'glitter';
+          glitter.style.left = `${Math.random() * 100}%`;
+          glitter.style.top = '-10px';
+          glitter.style.animationDelay = `${Math.random() * 2}s`;
+
+          space.appendChild(glitter);
+
+          glitter.addEventListener('animationend', () => glitter.remove());
+        }, i * 20);
+      }
+    }
+
+    function createUFO() {
+      const ufo = document.createElement('div');
+      ufo.className = 'ufo';
+      ufo.style.setProperty('--yPos', `${Math.random() * 80 + 10}vh`);
+
+      const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100" height="50">
+      <defs>
+        <filter id="pixelate">
+          <feFlood x="0" y="0" width="2" height="2" flood-color="currentColor"/>
+          <feComposite width="2" height="2"/>
+          <feTile result="a"/>
+          <feComposite in="SourceGraphic" in2="a" operator="in"/>
+          <feMorphology operator="dilate" radius="1"/>
+        </filter>
+      </defs>
+      <g filter="url(#pixelate)">
+        <path fill="#5D6D7E" d="M4 18h24v4H4z"/>
+        <path fill="#85929E" d="M8 14h16v4H8z"/>
+        <path fill="#AEB6BF" d="M12 10h8v4h-8z"/>
+        <path fill="#5DADE2" d="M14 6h4v4h-4z"/>
+        <path fill="#3498DB" d="M14 22h4v2h-4zM10 22h2v2h-2zM20 22h2v2h-2z"/>
+        <path fill="#E74C3C" d="M6 18h2v2H6zM24 18h2v2h-2z"/>
+      </g>
+    </svg>
+  `;
+
+      ufo.innerHTML = svg;
+      space.appendChild(ufo);
+
+      ufo.addEventListener('animationend', () => ufo.remove());
+    }
+
+    setInterval(createUFO, 5000);
+
+    document.addEventListener('mousemove', (e) => {
+      const mouseX = e.clientX / window.innerWidth;
+      const mouseY = e.clientY / window.innerHeight;
+
+      space.style.transform = `translate(${mouseX * 20}px, ${mouseY * 20}px)`;
+    });
+
+    const messages = document.querySelectorAll('.message, .question-box');
+    messages.forEach(message => {
+      message.style.opacity = '0';
+      message.style.transform = 'translateY(-20px)';
+      message.style.transition = 'opacity 0.5s, transform 0.5s';
+    });
+
+    function showMessageWithAnimation(messageId) {
+      const message = document.getElementById(messageId);
+      message.style.display = 'block';
+      setTimeout(() => {
+        message.style.opacity = '1';
+        message.style.transform = 'translateY(0)';
+      }, 10);
+    }
+
+    specialStars.forEach(starInfo => {
+      const star = document.getElementById(starInfo.id);
+      star.addEventListener('click', () => showMessageWithAnimation(starInfo.message));
+    });
+  </script>
+</body>
+
+</html>
